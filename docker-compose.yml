@@ -1,0 +1,43 @@
+version: '3.9'
+name: 'transactional'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      # POSTGRES_PASSWORD_FILE: "run/secrets/psql-default-password"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 127.0.0.1:${POSTGRES_PORT}:${POSTGRES_PORT}
+    # secrets:
+    #   - psql-default-password
+    volumes:
+      - transactions_db:/var/lib/postgresql/data
+      - ./postgres_init.sql:/docker-entrypoint-initdb.d/postgres_init.sql
+
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./server:/root
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    # secrets:
+    #   - psql-docker-password
+    depends_on:
+      - db
+    env_file: .env
+
+volumes:
+  transactions_db:
+
+    # secrets:
+    #   psql-default-password:
+    #     file: ./db-default-pass.txt
+    #   psql-docker-password:
+    #     file: ./db-docker-pass.txt

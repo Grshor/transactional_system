@@ -1,0 +1,53 @@
+syntax = "proto3";
+package api;
+option go_package = "./proto";
+
+service Transactions{
+    rpc Transfer(stream TransferRequest) returns (stream TransferResponse);
+    rpc Balance(BalanceRequest)returns (BalanceResponse);
+}
+
+message BalanceRequest{
+    string client = 1;
+    string private_key = 2;
+};
+message BalanceResponse{
+    string balance = 1;
+}
+
+message TransferRequest{
+    string from = 1;
+    string to = 2;
+    string private_key = 3;
+    string amount = 4; 
+    string transfer_id = 5;
+};
+message TransferResponse{
+    enum status {
+        OK = 0;
+        CANCELED = 1;
+        UNKNOWN = 2;
+        INVALI_DARGUMENT = 3;
+        DeadlineExceeded = 4;
+        NotFound = 5;
+        AlreadyExists = 6;
+        PermissionDenied = 7;
+        ResourceExhausted = 8;
+        FailedPrecondition = 9;
+        Aborted = 10;
+        OutOfRange = 11;
+        Unimplemented = 12;
+        Internal = 13;
+        Unavailable = 14;
+        DataLoss = 15;
+        Unauthenticated = 16;
+    }
+    status status_code = 1;
+    string transfer_id = 2;
+};
+
+// message Decimal{
+//     uint64 left = 1;
+//     uint32 right = 2;
+//     sint32 signScale = 3;
+// };
